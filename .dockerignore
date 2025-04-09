@@ -19,3 +19,12 @@ __pycache__
 # Exclude some weights
 /openai
 /liuhaotian
+
+# Exclude k8s files
+/k8s
+
+# Exclude dataset downloading stuff
+/downloading_datasets
+
+# Excluse webpage
+*.webloc
