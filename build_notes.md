@@ -5,5 +5,7 @@ Work for adapting to [OpenCLIP](https://github.com/mlfoundations/open_clip) enco
 
 I ran `export DOCKER_DEFAULT_PLATFORM=linux/amd64` and built via `cog build -t registry.datexis.com/jwesterhoff/llava-pretrain:latest`.
 
+NOTE: I could not get it to build without some version adjustments (see cog.yaml) and removing flash attention (see llava/train/train_mem.py).
+
 Not all trouble with building for the correct platform with `cog` could be solved with this.
 What worked for me as well was to build it first with `cog` (and it will fail), then run `cog debug  > Dockerfile`, then potentially even change this Dockerfile and its requirements.txt in the generated .cog folder to your needs (e.g., other CUDA and torch version), and finnaly run `docker build -t registry.datexis.com/jwesterhoff/llava-train:latest . --platform=linux/amd64` with that.
