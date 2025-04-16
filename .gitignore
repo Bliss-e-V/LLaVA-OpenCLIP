@@ -37,8 +37,8 @@ serve_images/
 # Exclude k8s files
 /k8s
 
-# Exclude dataset downloading stuff
-/downloading_datasets
+# Exclude some dataset downloading stuff
+OCR-VQA_dataset.json
 
 # Exclude cog files
 .cog

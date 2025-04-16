@@ -1,5 +1,9 @@
 # Notes about how I build stuff and got it running
 
+## Data
+See preparing_datasets/training/download.py to download and prepare all the datasets necessary to train LLaVA models.
+
+## Docker
 Goal is to train LLaVA models with other vision encoders than the ones available by default. Especially, we want to check the performance with [this vision encoder](https://huggingface.co/UCSC-VLAA/ViT-L-14-CLIPA-336-datacomp1B).
 Work for adapting to [OpenCLIP](https://github.com/mlfoundations/open_clip) encoders is inspired by [this](https://gist.github.com/TommyIX/681ad23947c3aa7c8482f4d39849df7d) and [this](https://github.com/haotian-liu/LLaVA/pull/966/commits/f7ad580555a0eee034e56fe9570aa23308bb6eee#diff-37265e6713ed9c53be498990d401380684d625f6fb9be6cc80772c277153fa37)
 
