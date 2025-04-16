@@ -43,5 +43,8 @@ serve_images/
 # Exclude cog files
 .cog
 
+# Exclude custom Dockerfile
+Dockerfile
+
 # Excluse webpage
 *.webloc
