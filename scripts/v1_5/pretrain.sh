@@ -1,9 +1,14 @@
 #!/bin/bash
 
+# Default usage:
 # VISION_TOWER_ORIGIN=openai
 # VISION_TOWER=clip-vit-large-patch14-336
-VISION_TOWER_ORIGIN=UCSC-VLAA
-VISION_TOWER=ViT-L-14-CLIPA-336-datacomp1B
+#  --vision_tower $VISION_TOWER_ORIGIN/$VISION_TOWER \
+
+# New, OpenCLIP usage:
+VISION_TOWER_OPENCLIP_ORIGIN=UCSC-VLAA
+VISION_TOWER_OPENCLIP=ViT-L-14-CLIPA-336-datacomp1B
+
 
 deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
@@ -11,14 +16,14 @@ deepspeed llava/train/train_mem.py \
     --version plain \
     --data_path /llava-datasets/pretrain_feature_alignment/blip_laion_cc_sbu_558k.json \
     --image_folder /llava-datasets/pretrain_feature_alignment \
-    --vision_tower $VISION_TOWER_ORIGIN/$VISION_TOWER \
+    --vision_tower hf-hub:$VISION_TOWER_OPENCLIP_ORIGIN/$VISION_TOWER_OPENCLIP \
     --mm_projector_type mlp2x_gelu \
     --tune_mm_mlp_adapter True \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --bf16 True \
-    --output_dir /llava-checkpoints/llava-v1.5-7b-$VISION_TOWER_ORIGIN-$VISION_TOWER-bs16-pretrain \
+    --output_dir /llava-checkpoints/llava-v1.5-7b-$VISION_TOWER_OPENCLIP_ORIGIN-$VISION_TOWER_OPENCLIP-bs16-pretrain \
     --num_train_epochs 1 \
     --per_device_train_batch_size 16 \
     --per_device_eval_batch_size 4 \
