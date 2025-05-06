@@ -2,6 +2,7 @@ from typing import List, Union
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision import transforms
 import open_clip
 
 
@@ -12,6 +13,13 @@ class SimpleImageProcessor:
     """
 
     def __init__(self, preprocess):
+
+        for tf in preprocess.transforms:
+            if isinstance(tf, transforms.Normalize):
+                self.image_mean = tf.mean
+            elif isinstance(tf, transforms.Resize):
+                self.crop_size = {"height": tf.size[0], "width": tf.size[1]}
+
         self.prepc = preprocess
 
     def preprocess(self, images, return_tensors="pt", **kwargs):
@@ -162,21 +170,50 @@ class OpenCLIPVisionTower(nn.Module):
     #  values are the ones for the model I am interested in (ViT-L-14-336)
     @property
     def hidden_size(self):
-        # Assumes the visual component has an attribute 'width'; default to 1024 for ViT-L-14
-        return getattr(self.vision_tower.visual, "width", 1024)
+        return self.vision_tower.visual.ln_post.normalized_shape[
+            0
+        ]  # 1024 for ViT-L-14
 
     @property
     def image_size(self):
         # Default image resolution for this model is 336.
-        return getattr(self.vision_tower.visual, "image_resolution", 336)
+        return self.image_processor.crop_size["height"]  # 336 for ViT-L-14
 
     @property
     def num_patches_per_side(self):
         # Default patch size is 14 so that 336/14 = 24 patches per side.
-        patch_size = getattr(self.vision_tower.visual, "patch_size", 14)
+        patch_size = self.vision_tower.visual.conv1.kernel_size[0]  # 14 for ViT-L-14
         return self.image_size // patch_size
 
     @property
     def num_patches(self):
         n = self.num_patches_per_side
         return n * n
+
+
+### TESTS
+
+if __name__ == "__main__":
+
+    import os
+    from transformers import AutoConfig, LlamaConfig
+
+    class LlavaConfig(LlamaConfig):
+        model_type = "llava_llama"
+
+    AutoConfig.register("llava_llama", LlavaConfig)
+    vision_tower_cfg = AutoConfig.from_pretrained(
+        os.path.join("llava", "model", "multimodal_encoder"), trust_remote_code=True
+    )
+    vision_tower = getattr(
+        vision_tower_cfg,
+        "mm_vision_tower",
+        getattr(vision_tower_cfg, "vision_tower", None),
+    )
+
+    # Use OpenCLIP if the model identifier indicates so:
+    vt = OpenCLIPVisionTower(
+        vision_tower,
+        args=vision_tower_cfg,
+    )
+    print("debug here")
