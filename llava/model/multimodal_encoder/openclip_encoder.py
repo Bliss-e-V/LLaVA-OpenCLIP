@@ -65,8 +65,23 @@ class OpenCLIPVisionTower(nn.Module):
         )
         # Set it to eval mode
         self.vision_tower.eval()  # NOTE: I only added this after both pretraining and finetuning; but Mario tested locally that for hf-hub:UCSC-VLAA/ViT-L-14-CLIPA-336-datacomp1B it does NOT make a difference :)
+
+        # Handle device_map properly
         if device_map is not None:
-            self.vision_tower.to(device_map)
+            print(f"Loading {self.vision_tower_name} to device map: {device_map}")
+            # Check if device_map is a string like "auto" or a dict
+            if isinstance(device_map, str) and device_map == "auto":
+                # For "auto", just use CUDA if available, otherwise CPU
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+                self.vision_tower.to(device)
+            elif isinstance(device_map, dict):
+                # For dict mapping, just use CUDA if available
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+                self.vision_tower.to(device)
+            else:
+                # For direct device specifications
+                self.vision_tower.to(device_map)
+
         # Freeze model parameters.
         for param in self.vision_tower.parameters():
             param.requires_grad = False
