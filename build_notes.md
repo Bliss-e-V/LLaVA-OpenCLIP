@@ -19,4 +19,8 @@ I did the pretraining on 8xA100 (40GB) using CUDA 11.8 for both the reproducing 
 For the finetuning, I adjusted the zero3.json config file by disabling `fp16` and enabling `bf16`. This sped up things on the 8xB200 (180GB) with CUDA 12.8 (though used a bit more RAM; it was 90GB per card). This worked for CLIP, but not for our custom OpenCLIP.
 For OpenCLIP, I used the zero2.json script with CUDA 11.8 on the 8xA100s again, also opting for bf16 here. My custom OpenCLIP implementation seems not to be nicely comptabile with deepseed stage 3 optimization.
 So, dadly, with only 8xA100 (40GB) and zero2 training, I had to go down to a batch size of 2 and the training took 14 hours. Couldn't do it with the B200s, because they are broken. Also, note that on the A100s with CUDA 12.8 the zero2 training did not work (got some weird hardware errors).
-Could try incorporating zero3 compatibilty into OpenCLIP stuff to make it work! See https://github.com/baaivision/EVA/blob/master/EVA-CLIP-18B/shinji/eva_clip/factory.py#L168 ... probably not so straight forward though. Idk.
+
+NOTE: Could try incorporating zero3 compatibilty into OpenCLIP stuff to make it work! See https://github.com/baaivision/EVA/blob/master/EVA-CLIP-18B/shinji/eva_clip/factory.py#L168 ... probably not so straight forward though. Idk.
+
+## Inference
+See https://github.com/Bliss-e-V/SCAM.
