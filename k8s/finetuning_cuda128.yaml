@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llava-training-job-cuda128-ucsc-zero2-bs2
+spec:
+  template:
+    spec:
+      priorityClassName: normal
+      containers:
+        - name: llava-train
+          image: registry.datexis.com/jwesterhoff/llava-train-cuda128-ucsc:bs2
+          workingDir: /src
+          command: ["/bin/bash", "./scripts/v1_5/finetune.sh"]
+          env:
+          - name: PYTHONPATH
+            value: "/src"
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          - name: WANDB_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: wandb-api
+                key: WANDB_API_KEY
+          volumeMounts:
+            - name: llava-datasets-pvc
+              mountPath: /llava-datasets
+            - name: llava-checkpoints-pvc
+              mountPath: /llava-checkpoints
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            limits:
+              nvidia.com/gpu: "8"
+              cpu: "16"
+              memory: "256Gi"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: gpu
+                    operator: In
+                    values:
+                      - a100 # b200
+      volumes:
+        - name: llava-datasets-pvc
+          persistentVolumeClaim:
+            claimName: llava-datasets-pvc
+        - name: llava-checkpoints-pvc
+          persistentVolumeClaim:
+            claimName: llava-checkpoints-pvc
+        - name: dshm
+          emptyDir:
+            medium: Memory
+      imagePullSecrets:
+        - name: private-registry-auth
+      restartPolicy: Never
+  backoffLimit: 0

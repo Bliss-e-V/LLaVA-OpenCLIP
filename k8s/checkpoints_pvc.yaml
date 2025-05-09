@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llava-checkpoints-pvc
+spec:
+  storageClassName: shared
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi

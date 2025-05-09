@@ -34,17 +34,7 @@ ckpts*
 # Demo
 serve_images/
 
-# Exclude k8s files
-/k8s
-
 # Exclude some dataset downloading stuff
 OCR-VQA_dataset.json
 
-# Exclude cog files
-.cog
-
-# Exclude custom Dockerfile
-Dockerfile
-
-# Excluse webpage
-*.webloc
+build_notes.md

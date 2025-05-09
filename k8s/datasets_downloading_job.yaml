@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: llava-datasets-download
+spec:
+  template:
+    spec:
+      priorityClassName: normal
+      containers:
+        - name: llava-datasets-download
+          image: python:3.10-slim
+          command: ["/bin/sh", "-c"]
+          args:
+            - pip install requests &&
+              python /preparing_datasets/download.py
+          env:
+          - name: LANG
+            value: 'C.UTF-8'
+          - name: PYTHONUNBUFFERED
+            value: '1'
+          volumeMounts:
+            - name: llava-datasets-pvc
+              mountPath: /llava-datasets
+          resources:
+            requests:
+              cpu: "1"
+              memory: "32Gi"
+            limits:
+              cpu: "16"
+              memory: "64Gi"
+      volumes:
+        - name: llava-datasets-pvc
+          persistentVolumeClaim:
+            claimName: llava-datasets-pvc
+      imagePullSecrets:
+        - name: private-registry-auth
+      restartPolicy: Never

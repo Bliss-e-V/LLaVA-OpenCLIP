@@ -1,6 +1,6 @@
 """
 Downloads all the necessary datasets for LLaVA training steps 1 and 2 as
-explained in the README file.
+explained in LLaVA's README file.
 
 To run it, move this script and the OCR-VQA_dataset.json to the same directory
 and run it.

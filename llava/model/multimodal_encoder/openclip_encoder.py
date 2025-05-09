@@ -1,3 +1,8 @@
+"""
+Inspired by https://gist.github.com/TommyIX/681ad23947c3aa7c8482f4d39849df7d
+and https://github.com/haotian-liu/LLaVA/pull/966/commits/f7ad580555a0eee034e56fe9570aa23308bb6eee#diff-37265e6713ed9c53be498990d401380684d625f6fb9be6cc80772c277153fa37
+"""
+
 from typing import List, Union
 import torch
 import torch.nn as nn
