@@ -152,7 +152,8 @@ class LlavaLlamaForCausalLM(LlamaForCausalLM, LlavaMetaForCausalLM):
             inputs_embeds=inputs_embeds,
             **kwargs,
         )
-        inputs.pop("cache_position")
+        if "cache_position" in inputs:
+            inputs.pop("cache_position")
         if images is not None:
             inputs["images"] = images
         if image_sizes is not None:
