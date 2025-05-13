@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: llava-pretrain-datacomp1b-batchs16-test
+  name: llava-pretrain-s0400m-bs16-a100-timm-simple
 spec:
   template:
     spec:
-      priorityClassName: normal
+      priorityClassName: important
       containers:
         - name: llava-pretrain
-          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip:latest
+          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip-timm-simple:s0400m
           workingDir: /src
           command: ["/bin/bash", "./scripts/v1_5/pretrain.sh"]
           env:
@@ -35,6 +35,19 @@ spec:
               nvidia.com/gpu: "8"
               cpu: "16"
               memory: "512Gi"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: gpu
+                    operator: In
+                    values:
+                      - a100
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - cl-worker28
       volumes:
         - name: llava-datasets-pvc
           persistentVolumeClaim:
