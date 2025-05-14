@@ -5,10 +5,11 @@ metadata:
 spec:
   template:
     spec:
-      priorityClassName: normal
+      priorityClassName: normal # important
       containers:
         - name: llava-train
           image: registry.datexis.com/jwesterhoff/llava-train-cuda128-ucsc:bs2
+          imagePullPolicy: Always # to force pulling the newest image
           workingDir: /src
           command: ["/bin/bash", "./scripts/v1_5/finetune.sh"]
           env:
@@ -43,7 +44,7 @@ spec:
                   - key: gpu
                     operator: In
                     values:
-                      - a100 # b200
+                      - b200
       volumes:
         - name: llava-datasets-pvc
           persistentVolumeClaim:

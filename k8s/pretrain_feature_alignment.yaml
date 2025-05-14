@@ -1,14 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: llava-pretrain-s0400m-bs16-a100-timm-simple
+  name: llava-pretrain-siglip-bs16-a100-timm-simple
 spec:
   template:
     spec:
-      priorityClassName: important
+      priorityClassName: normal # important
       containers:
         - name: llava-pretrain
-          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip-timm-simple:s0400m
+          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip-timm-simple:siglip
+          imagePullPolicy: Always # to force pulling the newest image
           workingDir: /src
           command: ["/bin/bash", "./scripts/v1_5/pretrain.sh"]
           env:
@@ -47,6 +48,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
+                      - cl-worker27
                       - cl-worker28
       volumes:
         - name: llava-datasets-pvc

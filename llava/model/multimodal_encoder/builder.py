@@ -10,7 +10,7 @@ def build_vision_tower(vision_tower_cfg, **kwargs):
         getattr(vision_tower_cfg, "vision_tower", None),
     )
 
-    # Use OpenCLIP if the model identifier indicates so:
+    # Use OpenCLIP if the model identifier indicates so
     if vision_tower.startswith("hf-hub:"):
         return OpenCLIPVisionTower(vision_tower, args=vision_tower_cfg, **kwargs)
 

@@ -28,7 +28,7 @@ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 cog build -t registry.datexis.com/jwesterhoff/llava-pretrain:latest
 ```
 
-Note that compared to the original, I could not get it to build without some version adjustments in the `cog.yaml` files and removing flash attention (see `llava/train/train_mem.py`).
+Note that compared to the original LLaVA code, I could not get it to build without some version adjustments in the `cog.yaml` files and removing flash attention (see `llava/train/train_mem.py`).
 
 If the build fails:
 1. Run `cog debug > Dockerfile`

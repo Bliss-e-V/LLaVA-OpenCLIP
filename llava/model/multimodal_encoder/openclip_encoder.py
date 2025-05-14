@@ -108,8 +108,18 @@ class OpenCLIPVisionTower(nn.Module):
         def hook_fn(module, input, output):
             hidden_states.append(output)
 
+        if hasattr(self.vision_tower.visual, "trunk") and hasattr(
+            self.vision_tower.visual.trunk, "blocks"
+        ):
+            # TIMM architecture
+            blocks = self.vision_tower.visual.trunk.blocks
+        elif hasattr(self.vision_tower.visual, "transformer") and hasattr(
+            self.vision_tower.visual.transformer, "resblocks"
+        ):
+            # OpenCLIP architecture
+            blocks = self.vision_tower.visual.transformer.resblocks
         # Register hooks on visual transformer blocks.
-        for block in self.vision_tower.visual.transformer.resblocks:
+        for block in blocks:
             hook = block.register_forward_hook(hook_fn)
             hooks.append(hook)
 
@@ -186,13 +196,19 @@ class OpenCLIPVisionTower(nn.Module):
             else torch.device("cpu")
         )
 
-    # NOTE: I have NOT tested the below getattr functions for OpenCLIP yet. The default
-    #  values are the ones for the model I am interested in (ViT-L-14-336)
     @property
     def hidden_size(self):
-        return self.vision_tower.visual.ln_post.normalized_shape[
-            0
-        ]  # 1024 for ViT-L-14
+        # 1024 for ViT-L-14, 1152 for SO400M
+        if hasattr(self.vision_tower.visual, "trunk") and hasattr(
+            self.vision_tower.visual.trunk, "norm"
+        ):
+            # For Timm models, get the embedding dimension from norm layer
+            hs = self.vision_tower.visual.trunk.norm.normalized_shape[0]
+            return hs
+        # Check if it's an OpenCLIP model
+        elif hasattr(self.vision_tower.visual, "ln_post"):
+            hs = self.vision_tower.visual.ln_post.normalized_shape[0]
+            return hs
 
     @property
     def image_size(self):
@@ -202,7 +218,16 @@ class OpenCLIPVisionTower(nn.Module):
     @property
     def num_patches_per_side(self):
         # Default patch size is 14 so that 336/14 = 24 patches per side.
-        patch_size = self.vision_tower.visual.conv1.kernel_size[0]  # 14 for ViT-L-14
+        if (
+            hasattr(self.vision_tower.visual, "trunk")
+            and hasattr(self.vision_tower.visual.trunk, "patch_embed")
+            and hasattr(self.vision_tower.visual.trunk.patch_embed, "proj")
+        ):
+            patch_size = vt.vision_tower.visual.trunk.patch_embed.proj.kernel_size[0]
+        elif hasattr(self.vision_tower.visual, "conv1"):
+            patch_size = self.vision_tower.visual.conv1.kernel_size[
+                0
+            ]  # 14 for ViT-L-14
         return self.image_size // patch_size
 
     @property
@@ -237,3 +262,4 @@ if __name__ == "__main__":
         args=vision_tower_cfg,
     )
     print("debug here")
+    print(f"hidden size: {vt.hidden_size}")
