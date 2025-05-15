@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: llava-training-job-cuda128-ucsc-zero2-bs2
+  name: llava-training-cuda128-openai-zero3-bs16
 spec:
   template:
     spec:
       priorityClassName: normal # important
       containers:
         - name: llava-train
-          image: registry.datexis.com/jwesterhoff/llava-train-cuda128-ucsc:bs2
+          image: registry.datexis.com/jwesterhoff/llava-train-cuda128-openai:latest
           imagePullPolicy: Always # to force pulling the newest image
           workingDir: /src
           command: ["/bin/bash", "./scripts/v1_5/finetune.sh"]
@@ -19,6 +19,8 @@ spec:
             value: 'C.UTF-8'
           - name: PYTHONUNBUFFERED
             value: '1'
+          # - name: CUDA_LAUNCH_BLOCKING
+            # value: '1'  # Add this for more detailed error messages
           - name: WANDB_API_KEY
             valueFrom:
               secretKeyRef:

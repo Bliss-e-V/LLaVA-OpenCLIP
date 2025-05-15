@@ -6,22 +6,24 @@
 #  --vision_tower $VISION_TOWER_ORIGIN/$VISION_TOWER
 
 # New, OpenCLIP usages:
-# VISION_TOWER_OPENCLIP_ORIGIN=UCSC-VLAA
-# VISION_TOWER_OPENCLIP=ViT-L-14-CLIPA-336-datacomp1B
+VISION_TOWER_OPENCLIP_ORIGIN=UCSC-VLAA
+VISION_TOWER_OPENCLIP=ViT-L-14-CLIPA-336-datacomp1B
 # VISION_TOWER_OPENCLIP_ORIGIN=timm
 # VISION_TOWER_OPENCLIP=ViT-SO400M-14-SigLIP-384
-VISION_TOWER_OPENCLIP_ORIGIN=timm
-VISION_TOWER_OPENCLIP=ViT-L-16-SigLIP-384
+# VISION_TOWER_OPENCLIP_ORIGIN=timm
+# VISION_TOWER_OPENCLIP=ViT-L-16-SigLIP-384
 #  --vision_tower hf-hub:$VISION_TOWER_OPENCLIP_ORIGIN/$VISION_TOWER_OPENCLIP
 
 # Set name from pretraining (step 1, feature alignment) here
 # ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-openai-clip-vit-large-patch14-336-bs16-pretrain
-# ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-UCSC-VLAA-ViT-L-14-CLIPA-336-datacomp1B-bs16-pretrain
+ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-UCSC-VLAA-ViT-L-14-CLIPA-336-datacomp1B-bs16-pretrain
 # ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-timm-ViT-SO400M-14-SigLIP-384-bs16-pretrain
-ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-timm-ViT-L-16-SigLIP-384-bs16-pretrain
+# ADAPTER_NAME=/llava-checkpoints/llava-v1.5-7b-timm-ViT-L-16-SigLIP-384-bs16-pretrain
 
-# On 8xA100 à 40GB, bs of 4 worked with zero3 training, and bs of 2 worked with zero2 training. The latter was necessary for OpenCLIP models.
-# On 8xB200 à 180GB, bs of 16 worked (probably also more, but the gradient accumulation is already at 1) with zero3 training. Didn't try zero2 training on these cards.
+# CLIP on 8xB200 à 180GB, bs of 16 worked (probably also more, but the gradient accumulation is already at 1) with zero3 training. Didn't try zero2 training on these cards.
+# OpenCLIP on 8xA100 à 40GB, bs of 4 worked with zero3 training, and bs of 2 worked with zero2 training. The latter was necessary for OpenCLIP models.
+# About SigLIP: Didn't fit on the A100s, and couldn't get it to work on B200s beacuse of missing CUDA kernels.
+
 
 deepspeed llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \

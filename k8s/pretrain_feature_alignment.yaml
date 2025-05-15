@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: llava-pretrain-siglip-bs16-a100-timm-simple
+  name: llava-pretrain-CLIPA-zero2-bs16
 spec:
   template:
     spec:
       priorityClassName: normal # important
       containers:
         - name: llava-pretrain
-          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip-timm-simple:siglip
+          image: registry.datexis.com/jwesterhoff/llava-pretrain-cog-openclip:latest
           imagePullPolicy: Always # to force pulling the newest image
           workingDir: /src
           command: ["/bin/bash", "./scripts/v1_5/pretrain.sh"]
