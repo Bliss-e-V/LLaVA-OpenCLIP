@@ -40,12 +40,15 @@ If the build fails:
 ### Pretraining
 - Hardware used: 8x A100 (40GB) with CUDA 11.8
 - Compatible with both standard CLIP and custom OpenCLIP models
+- batch size 16 with 2 gradient_accumulation_steps worked for all models on this setup
 
 ### Finetuning
-- For CLIP models: Used zero3.json config with bf16 on 8x B200 GPUs with CUDA 12.8
+- For CLIP models: Used zero3.json config with bf16 and batch size 16 (1 gradient_accumulation_step) on 8x B200 GPUs with CUDA 12.8
 - For OpenCLIP models: Used zero2.json with CUDA 11.8 on 8x A100s with bf16
   - Note: Custom OpenCLIP implementation has compatibility issues with DeepSpeed stage 3 optimization, it seems.
   - With zero2 training on 8x A100 (40GB), batch size had to be reduced to 2 (training time: ~14 hours)
+
+NOTE: Could not get SigLIP models to train, because they don't even fit on 8xA100 40GB with batch size 1.
 
 ### OpenCLIP Integration Notes
 - For better DeepSpeed stage 3 compatibility, improvements could be made following approaches like [EVA-CLIP](https://github.com/baaivision/EVA/blob/master/EVA-CLIP-18B/shinji/eva_clip/factory.py#L168)
